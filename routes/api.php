@@ -22,3 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('create', [CustomerController::class, 'create']);
 Route::get('get/{id}', [CustomerController::class, 'get']);
+Route::get('list', [CustomerController::class, 'list']);
+Route::post('update', [CustomerController::class, 'update']);
+Route::get('search', [CustomerController::class, 'search']);
+Route::get('delete/{id}', [CustomerController::class, 'delete']);
