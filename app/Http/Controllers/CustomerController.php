@@ -92,11 +92,11 @@ class CustomerController extends Controller
         // return response()->json([$plan], 200);
 
         /* create customer */
-        $customer = $stripe->customers->create([
-            'description' => $request->description,
-            'email' => $request->email
-        ]);
-        return response()->json([$customer], 200);
+        // $customer = $stripe->customers->create([
+        //     'description' => $request->description,
+        //     'email' => $request->email
+        // ]);
+        // return response()->json([$customer], 200);
 
         /* create subscription item*/
         // $subscriptionItem = $stripe->subscriptionItems->create([
@@ -106,6 +106,7 @@ class CustomerController extends Controller
         // ]);
         // return response()->json([$subscriptionItem], 200);
 
+        /* create charge */
         // $charge = $stripe->charges->create([
         //     'amount' => 2000,
         //     'currency' => 'inr',
@@ -113,6 +114,33 @@ class CustomerController extends Controller
         //     'description' => 'My First Test Charge',
         // ]);
         // return response()->json([$charge], 200);
+
+        /* create tax rate */
+        // $taxRate = $stripe->taxRates->create([
+        //     'display_name' => 'sales_tax',
+        //     'description' => 'India',
+        //     'jurisdiction' => 'IN',
+        //     'percentage' => 20,
+        //     'inclusive' => true,
+        //     'tax_type' => 'sales_tax'
+        // ]);
+        // return response()->json([$taxRate], 200);
+
+        /* create sources */
+        // $source = $stripe->sources->create([
+        //     "type" => "ach_credit_transfer",
+        //     "currency" => "usd",
+        //     "owner" => [
+        //         "email" => "ak@gmail.com"
+        //     ]
+        // ]);
+        // return response()->json([$source], 200);
+
+        /* create invoice */
+        $invoice = $stripe->invoices->create([
+            'customer' => 'cus_NmJYQB2h8C8s6X',
+        ]);
+        return response()->json([$invoice], 200);
     }
     public function get(Request $request, $id)
     {
@@ -172,10 +200,28 @@ class CustomerController extends Controller
         // return response()->json([$plan], 200);
 
         /* get subscription*/
-        $subscription = $stripe->subscriptions->retrieve(
+        // $subscription = $stripe->subscriptions->retrieve(
+        //     $request->id
+        // );
+        // return response()->json([$subscription], 200);
+
+        /* get tax rate*/
+        // $taxRate = $stripe->taxRates->retrieve(
+        //     $request->id
+        // );
+        // return response()->json([$taxRate], 200);
+
+        /* get sources */
+        // $sources = $stripe->sources->retrieve(
+        //     $request->id
+        // );
+        // return response()->json([$sources], 200);
+
+        /* get invoice */
+        $invoice = $stripe->invoices->retrieve(
             $request->id
         );
-        return response()->json([$subscription], 200);
+        return response()->json([$invoice], 200);
     }
     public function list()
     {
@@ -219,11 +265,16 @@ class CustomerController extends Controller
         // return response()->json([$paymentIntent], 200);
 
         /* list of card */
-        $card = $stripe->customers->allSources(
-            'cus_NmJNk57a8cbZzQ',
-            ['object' => 'card', 'limit' => 3]
-        );
-        return response()->json([$card], 200);
+        // $card = $stripe->customers->allSources(
+        //     'cus_NmJNk57a8cbZzQ',
+        //     ['object' => 'card', 'limit' => 3]
+        // );
+        // return response()->json([$card], 200);
+
+        /* list of tax rate */
+        // $taxRate = $stripe->taxRates->all(['limit' => 3]);
+        // return response()->json([$taxRate], 200);
+
     }
     public function update()
     {
@@ -290,12 +341,27 @@ class CustomerController extends Controller
         // return response()->json([$subscription], 200);
 
         /* update paymant intent detail*/
-        $paymentIntent = $stripe->paymentIntents->update(
-            'pi_3N0lTYSBSrbWXS3z1NzAP4IC',
+        // $paymentIntent = $stripe->paymentIntents->update(
+        //     'pi_3N0lTYSBSrbWXS3z1NzAP4IC',
+        //     ['metadata' => ['order_id' => '6735']]
+        // );
+        // return response()->json([$paymentIntent], 200);
+
+        /* update tax rate detail*/
+        // $taxRate = $stripe->taxRates->update(
+        //     'txr_1N1RGiSBSrbWXS3z9FgetfUa',
+        //     ['active' => false]
+        // );
+        // return response()->json([$taxRate], 200);
+
+        /* update source detail */
+        $sources = $stripe->sources->update(
+            'src_1N1RkuSBSrbWXS3z3PVlEjbB',
             ['metadata' => ['order_id' => '6735']]
         );
-        return response()->json([$paymentIntent], 200);
+        return response()->json([$sources], 200);
     }
+
     public function search()
     {
         $stripe = new \Stripe\StripeClient(
@@ -306,6 +372,7 @@ class CustomerController extends Controller
         ]);
         return response()->json([$customer], 200);
     }
+
     public function delete(Request $request, $id)
     {
         $stripe = new \Stripe\StripeClient(
@@ -336,9 +403,99 @@ class CustomerController extends Controller
         // return response()->json([$coupon], 200);
 
         /* delete plan */
-        $plan = $stripe->plans->delete(
+        // $plan = $stripe->plans->delete(
+        //     $request->id
+        // );
+        // return response()->json([$plan], 200);
+
+        /* cancel subscription */
+        $subscription = $stripe->subscriptions->cancel(
             $request->id
         );
-        return response()->json([$plan], 200);
+        return response()->json([$subscription], 200);
+    }
+    public function resume()
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $resume = $stripe->subscriptions->resume(
+            'sub_1N1RC3SBSrbWXS3zwWk2u2tC',
+            ['billing_cycle_anchor' => 'now']
+        );
+        return response()->json([$resume], 200);
+    }
+    public function attach()
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $attach = $stripe->customers->createSource(
+            'cus_NmJNk57a8cbZzQ',
+            [
+                'source' => 'src_1N1RkuSBSrbWXS3z3PVlEjbB',
+            ]
+        );
+        return response()->json([$attach], 200);
+    }
+    public function detach()
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $detach = $stripe->customers->deleteSource(
+            'cus_NmJNk57a8cbZzQ',
+            'src_1N1RkuSBSrbWXS3z3PVlEjbB'
+        );
+        return response()->json([$detach], 200);
+    }
+    public function pay(Request $request, $id)
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $pay = $stripe->invoices->pay($request->id);
+        return response()->json([$pay], 200);
+    }
+    public function finalize(Request $request, $id)
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $finalize = $stripe->invoices->finalizeInvoice(
+            $request->id
+        );
+        return response()->json([$finalize], 200);
+    }
+    public function upcomingInvoice()
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $upcommingInvoice = $stripe->invoices->upcoming([
+            'customer' => 'cus_NmJYQB2h8C8s6X',
+        ]);
+        return response()->json([$upcommingInvoice], 200);
+    }
+    public function sendInvoice(Request $request, $id)
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $sendinvoice = $stripe->invoices->sendInvoice(
+            $request->id
+        );
+        return response()->json([$sendinvoice], 200);
+    }
+    public function allUpcomingInvoice()
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $allInvoice = $stripe->invoices->upcomingLines([
+            'customer' => 'cus_NmJYQB2h8C8s6X',
+            'limit' => 5,
+        ]);
+        return response()->json([$allInvoice], 200);
     }
 }
