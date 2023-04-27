@@ -2,31 +2,60 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CartItem;
 use Illuminate\Http\Request;
+use Stripe\Checkout\Session;
+use Stripe\Stripe;
 
 class CheckoutController extends Controller
 {
-    public  function checkOut()
+    public function checkout()
     {
-        //Enter Your Stripe Secret
-        \Stripe\Stripe::setApiKey('sk_test_51N0eBxSBSrbWXS3zZrrt0bOXph4LFfS4bFAoPxJvNgdNiLLEvEETJUsfJShR3qIsXoasGa1APD2KF5JxFNBLTI5f00Q6MtABqh');
+        header('Content-Type: application/json');
+        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
 
-        $amount = 100;
-        $amount *= 100;
-        $amount = (int)$amount;
-
-        $payment_intent = \Stripe\PaymentIntent::create([
-            'description' => 'Stripe Test Payment',
-            'amount' => $amount,
-            'currency' => 'INR',
-            'description' => 'Payment From All About Laravel',
+        $checkout_session = Session::create([
             'payment_method_types' => ['card'],
+            'line_items' => [
+                $this->lineItems()
+            ],
+            'mode' => 'payment',
+            'success_url' => 'http://localhost:8000/success',
+            'cancel_url' => 'http://localhost:8000/cancel',
         ]);
-        $intent = $payment_intent->client_secret;
-        return view('checkout.credit-card', compact('intent'));
+
+        //returns session id
+        return response()->json(['id' => $checkout_session->id]);
     }
-    public function afterPayment()
+
+    private function lineItems()
     {
-        echo 'Payment Recieved,Thankyou for using our services';
+        $cartItems = CartItem::all();
+        $lineItems = [];
+        foreach ($cartItems as $cartItem) {
+            $product['price_data'] = [
+                'currency' => 'INR',
+                'unit_amount' => $cartItem->price * 100,
+                'product_data' => [
+                    'name' => $cartItem->product->name,
+                    'images' => [$cartItem->product->image],
+                ],
+            ];
+            $product['quantity'] = $cartItem->quantity;
+            $lineItems[] = $product;
+        }
+
+        return $lineItems;
+    }
+
+    public function success()
+    {
+        CartItem::truncate();
+        return view('success');
+    }
+
+    public function cancel()
+    {
+        return view('cancel');
     }
 }
