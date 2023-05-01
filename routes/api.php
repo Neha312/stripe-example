@@ -34,3 +34,8 @@ Route::post('finalize/{id}', [CustomerController::class, 'finalize']);
 Route::get('upcoming-invoice', [CustomerController::class, 'upcomingInvoice']);
 Route::post('send-invoice/{id}', [CustomerController::class, 'sendInvoice']);
 Route::get('all-upcoming-invoice', [CustomerController::class, 'allUpcomingInvoice']);
+Route::post('release-subcription/{id}', [CustomerController::class, 'releaseSubcription']);
+Route::post('cancel-subscription/{id}', [CustomerController::class, 'cancelSubscription']);
+Route::delete('draft-invoice-delete/{id}', [CustomerController::class, 'draftInvoiceDelete']);
+Route::post('capture-charge/{id}', [CustomerController::class, 'captureCharge']);
+Route::post('payment-link', [CustomerController::class, 'paymentLink']);

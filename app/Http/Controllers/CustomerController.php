@@ -92,28 +92,11 @@ class CustomerController extends Controller
         // return response()->json([$plan], 200);
 
         /* create customer */
-        // $customer = $stripe->customers->create([
-        //     'description' => $request->description,
-        //     'email' => $request->email
-        // ]);
-        // return response()->json([$customer], 200);
-
-        /* create subscription item*/
-        // $subscriptionItem = $stripe->subscriptionItems->create([
-        //     'subscription' => 'sub_1N1492SBSrbWXS3zSQqKlVVz',
-        //     'price' => 'price_1N0lCISBSrbWXS3zHv4k2NHy',
-        //     'quantity' => 2,
-        // ]);
-        // return response()->json([$subscriptionItem], 200);
-
-        /* create charge */
-        // $charge = $stripe->charges->create([
-        //     'amount' => 2000,
-        //     'currency' => 'inr',
-        //     'source' => 'tok_mastercard',
-        //     'description' => 'My First Test Charge',
-        // ]);
-        // return response()->json([$charge], 200);
+        $customer = $stripe->customers->create([
+            'description' => $request->description,
+            'email' => $request->email
+        ]);
+        return response()->json([$customer], 200);
 
         /* create tax rate */
         // $taxRate = $stripe->taxRates->create([
@@ -137,16 +120,92 @@ class CustomerController extends Controller
         // return response()->json([$source], 200);
 
         /* create invoice */
-        $invoice = $stripe->invoices->create([
-            'customer' => 'cus_NmJYQB2h8C8s6X',
-        ]);
-        return response()->json([$invoice], 200);
+        // $invoice = $stripe->invoices->create([
+        //     'customer' => 'cus_NmJYQB2h8C8s6X',
+        // ]);
+        // return response()->json([$invoice], 200);
+
+        /* create customer balance transaction  */
+        // $customerBalance = $stripe->customers->createBalanceTransaction(
+        //     'cus_NmJYQB2h8C8s6X',
+        //     ['amount' => +1000, 'currency' => 'inr']
+        // );
+        // return response()->json([$customerBalance], 200);
+
+        /* create charge */
+        // $charge = $stripe->charges->create([
+        //     'amount' => 2000,
+        //     'currency' => 'usd',
+        //     'source' => 'tok_mastercard',
+        //     'description' => 'My First Test Charge (created for API docs at https://www.stripe.com/docs/api)',
+        // ]);
+        // return response()->json([$charge], 200);
+
+        /* create payment link */
+        // $paymentlink = $stripe->paymentLinks->create([
+        //     'line_items' => [
+        //         [
+        //             'price' => 'price_1N0lAdSBSrbWXS3zrOoh0mcv',
+        //             'quantity' => 1,
+        //         ],
+        //     ],
+        // ]);
+        // return response()->json([$paymentlink], 200);
+
+        /* create webhook */
+        // $webhook = $stripe->webhookEndpoints->create([
+        //     'url' => 'https://example.com/webhook/endpoint',
+        //     'enabled_events' => [
+        //         'charge.succeeded',
+        //         'charge.failed',
+        //         'customer.created',
+        //     ],
+        // ]);
+        // return response()->json([$webhook], 200);
+
+        /* create cardholder */
+        // $cardHolder = $stripe->issuing->cardholders->create([
+        //     'type' => 'individual',
+        //     'name' => 'Neha',
+        //     'email' => 'neha1@example.com',
+        //     'phone_number' => '9871542164',
+        //     'billing' => [
+        //         'address' => [
+        //             'line1' => '1234 Main Street',
+        //             'city' => 'Surat',
+        //             'state' => 'Gujarat',
+        //             'country' => 'IN',
+        //             'postal_code' => '365412',
+        //         ],
+        //     ],
+        // ]);
+        // return response()->json([$cardHolder], 200);
+
+        /* create subscription schedule */
+        // $subscriptionSchedule = $stripe->subscriptionSchedules->create([
+        //     'customer' => 'cus_NmJNk57a8cbZzQ',
+        //     'start_date' => 1682656383,
+        //     'end_behavior' => 'release',
+        //     'phases' => [
+        //         [
+        //             'items' => [
+        //                 [
+        //                     'price' => 'price_1N0kDcSBSrbWXS3zZDs83bVS',
+        //                     'quantity' => 1,
+        //                 ],
+        //             ],
+        //             'iterations' => 12,
+        //         ],
+        //     ],
+        // ]);
+        // return response()->json([$subscriptionSchedule], 200);
     }
     public function get(Request $request, $id)
     {
         $stripe = new \Stripe\StripeClient(
             env('STRIPE_SECRET_KEY')
         );
+
         /* get balance */
         // $balance = $stripe->balance->retrieve([]);
         // return response()->json([$balance], 200);
@@ -218,10 +277,43 @@ class CustomerController extends Controller
         // return response()->json([$sources], 200);
 
         /* get invoice */
-        $invoice = $stripe->invoices->retrieve(
+        // $invoice = $stripe->invoices->retrieve(
+        //     $request->id
+        // );
+        // return response()->json([$invoice], 200);
+
+        /* get customer balance */
+        // $customerBalance = $stripe->customers->retrieveBalanceTransaction(
+        //     'cus_NmJYQB2h8C8s6X',
+        //     'cbtxn_1N1kznSBSrbWXS3zCwaZUnpr',
+        //     []
+        // );
+        // return response()->json([$customerBalance], 200);
+
+        /* get subscription schedule detail */
+        // $subscriptionSchedule = $stripe->subscriptionSchedules->retrieve(
+        //     $request->id
+        // );
+        // return response()->json([$subscriptionSchedule], 200);
+
+        /* get charge */
+        // $charge = $stripe->charges->retrieve(
+        //     'ch_17LZ0E2eZvKYlo2C9VlL32EW',
+        //     []
+        // );
+        // return response()->json([$charge], 200);
+
+        /* get payment link */
+        // $paymentlink = $stripe->paymentLinks->retrieve(
+        //     $request->id
+        // );
+        // return response()->json([$paymentlink], 200);
+
+        /* get webhook */
+        $webhook = $stripe->webhookEndpoints->retrieve(
             $request->id
         );
-        return response()->json([$invoice], 200);
+        return response()->json([$webhook], 200);
     }
     public function list()
     {
@@ -275,6 +367,30 @@ class CustomerController extends Controller
         // $taxRate = $stripe->taxRates->all(['limit' => 3]);
         // return response()->json([$taxRate], 200);
 
+        /* list of invoice */
+        // $invoices = $stripe->invoices->all(['limit' => 5]);
+        // return response()->json([$invoices], 200);
+
+        /* list of customer balance transaction */
+        // $customerBalance = $stripe->customers->allBalanceTransactions(
+        //     'cus_NmJYQB2h8C8s6X',
+        //     ['limit' => 5]
+        // );
+        // return response()->json([$customerBalance], 200);
+
+        /* list of subcription schedule detail */
+        // $subscriptionSchedule = $stripe->subscriptionSchedules->all([
+        //     'limit' => 3,
+        // ]);
+        // return response()->json([$subscriptionSchedule], 200);
+
+        /* list of payment link */
+        // $paymentLink = $stripe->paymentLinks->all(['limit' => 3]);
+        // return response()->json([$paymentLink], 200);
+
+        /* list of webhook */
+        $webhook = $stripe->webhookEndpoints->all(['limit' => 3]);
+        return response()->json([$webhook], 200);
     }
     public function update()
     {
@@ -355,13 +471,41 @@ class CustomerController extends Controller
         // return response()->json([$taxRate], 200);
 
         /* update source detail */
-        $sources = $stripe->sources->update(
-            'src_1N1RkuSBSrbWXS3z3PVlEjbB',
-            ['metadata' => ['order_id' => '6735']]
-        );
-        return response()->json([$sources], 200);
-    }
+        // $sources = $stripe->sources->update(
+        //     'src_1N1RkuSBSrbWXS3z3PVlEjbB',
+        //     ['metadata' => ['order_id' => '6735']]
+        // );
+        // return response()->json([$sources], 200);
 
+        /* update customer balance transaction */
+        // $customerBalance = $stripe->customers->updateBalanceTransaction(
+        //     'cus_NmJYQB2h8C8s6X',
+        //     'cbtxn_1N1kznSBSrbWXS3zCwaZUnpr',
+        //     ['metadata' => ['order_id' => '6735']]
+        // );
+        // return response()->json([$customerBalance], 200);
+
+        /* update charge */
+        // $charge = $stripe->charges->update(
+        //     'ch_3N1ouYDk2w6KFIXY3Unes5ec',
+        //     ['metadata' => ['name' => 'neha']]
+        // );
+        // return response()->json([$charge], 200);
+
+        /* update payment link */
+        // $paymentlink = $stripe->paymentLinks->update(
+        //     'plink_1N2pwxSBSrbWXS3ziCRXUY98',
+        //     ['active' => false]
+        // );
+        // return response()->json([$paymentlink], 200);
+
+        /* update webhook */
+        $webhook = $stripe->webhookEndpoints->update(
+            'we_1N2qhzSBSrbWXS3zsqyv7G5S',
+            ['url' => 'https://example.com/new_endpoint']
+        );
+        return response()->json([$webhook], 200);
+    }
     public function search()
     {
         $stripe = new \Stripe\StripeClient(
@@ -409,10 +553,16 @@ class CustomerController extends Controller
         // return response()->json([$plan], 200);
 
         /* cancel subscription */
-        $subscription = $stripe->subscriptions->cancel(
+        // $subscription = $stripe->subscriptions->cancel(
+        //     $request->id
+        // );
+        // return response()->json([$subscription], 200);
+
+        /* delete webhook */
+        $webhook = $stripe->webhookEndpoints->delete(
             $request->id
         );
-        return response()->json([$subscription], 200);
+        return response()->json([$webhook], 200);
     }
     public function resume()
     {
@@ -420,7 +570,7 @@ class CustomerController extends Controller
             env('STRIPE_SECRET_KEY')
         );
         $resume = $stripe->subscriptions->resume(
-            'sub_1N1RC3SBSrbWXS3zwWk2u2tC',
+            'sub_1N1oShSBSrbWXS3zooBtNvyv',
             ['billing_cycle_anchor' => 'now']
         );
         return response()->json([$resume], 200);
@@ -497,5 +647,45 @@ class CustomerController extends Controller
             'limit' => 5,
         ]);
         return response()->json([$allInvoice], 200);
+    }
+    public function releaseSubcription(Request $request, $id)
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $releaseSubscription = $stripe->subscriptionSchedules->release(
+            $request->id
+        );
+        return response()->json([$releaseSubscription], 200);
+    }
+    public function cancelSubscription(Request $request, $id)
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $cancelSubscription = $stripe->subscriptionSchedules->cancel(
+            $request->id
+        );
+        return response()->json([$cancelSubscription], 200);
+    }
+    public function draftInvoiceDelete(Request $request, $id)
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $drafInvoiceDelete = $stripe->invoices->delete(
+            $request->id
+        );
+        return response()->json([$drafInvoiceDelete], 200);
+    }
+    public function captureCharge(Request $request, $id)
+    {
+        $stripe = new \Stripe\StripeClient(
+            env('STRIPE_SECRET_KEY')
+        );
+        $charge = $stripe->charges->capture(
+            $request->id
+        );
+        return response()->json([$charge], 200);
     }
 }

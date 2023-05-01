@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plan;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
 
 class PlanController extends Controller
@@ -26,7 +27,7 @@ class PlanController extends Controller
      */
     public function show(Plan $plan, Request $request)
     {
-        $intent = auth()->user();
+        $intent = auth()->user()->createSetupIntent();
 
         return view("subscription", compact("plan", "intent"));
     }
@@ -40,7 +41,10 @@ class PlanController extends Controller
         $plan = Plan::find($request->plan);
 
         $subscription = $request->user()->newSubscription($request->plan, $plan->stripe_plan);
+        dd($subscription);
+        $user = auth()->user();
+        $sub = Subscription::create(['user_id' => $user->id, 'name' => $plan->name, 'stripe_id' => $plan->id, 'stripe_price' => $plan->price]);
 
-        return view("subscription_success");
+        return view("subscription_success", $sub);
     }
 }

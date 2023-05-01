@@ -45,6 +45,6 @@ Route::get('cancel', [CheckoutController::class, 'cancel'])->name('cancel');
 //create plane
 Route::middleware("auth")->group(function () {
     Route::get('plans', [PlanController::class, 'index']);
-    // Route::get('plans/{plan}', [PlanController::class, 'show'])->name("plans.show");
-    // Route::post('subscription', [PlanController::class, 'subscription'])->name("subscription.create");
+    Route::get('plans/{plan}', [PlanController::class, 'show'])->name("plans.show");
+    Route::post('subscription', [PlanController::class, 'subscription'])->name("subscription.create");
 });

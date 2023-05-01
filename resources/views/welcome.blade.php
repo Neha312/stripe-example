@@ -1014,6 +1014,7 @@
 </html> --}}
 
 
+{{-- product code --}}
 @extends('layouts.master')
 @section('content')
     <div class="row">
